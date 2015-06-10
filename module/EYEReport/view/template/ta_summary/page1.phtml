@@ -1,0 +1,66 @@
+<?php
+if (empty($model)) {
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="Chart.min.js"></script>
+</head>
+<body>
+
+<div>
+    <p>The <em>Early Years Evaluation - Teacher Assessment (<strong>EYE-TA</strong>)</em> provides a systematic framework teachers can use to structure their frequent observations and informal assessments in play-based learning environments<sup>1</sup>. It assesses children’s development in five domains, which are consistent with frameworks set out by UNICEF and the US Congress<sup>2</sup>: <em>Awareness of Self and Environment, Social Skills and Approaches to Learning, Cognitive Skills, Language and Communication, and Physical Development</em>. The research has shown that the skills in these domains are related to children’s literacy development and their success at school<sup>3,4</sup>.</p>
+    <p>The <em><strong>EYE-TA</strong></em> is a web-based assessment that can be completed by kindergarten or grade 1 teachers as part of their regular classroom practice.</p>
+</div>
+
+<div>
+    <dl>
+        <dt>Assessment Period:</dt><dd></dd>
+        <dt>Number of participating schools:</dt><dd></dd>
+        <dt>Number of participating teachers:</dt><dd></dd>
+        <dt>Number of participating classrooms:</dt><dd></dd>
+        <dt>Average age on :</dt><dd></dd>
+        <dl>
+            <dt>Boys:</dt><dd></dd>
+            <dt>Girls:</dt><dd></dd>
+        </dl>
+    </dl>
+</div>
+
+<div>
+    <dl><dt>Number of children assessed:</dt><dd></dd></dl>
+    <p>Breakdown of boys and girls:</p>
+    <canvas id="numOfBoysAndGirls"></canvas>
+</div>
+
+<div>
+    <p>Boys - Age on </p>
+    <canvas id="agesOfBoys"></canvas>
+    <p>Girls - Age on </p>
+    <canvas id="agesOfGirls"></canvas>
+</div>
+
+<div>
+    <div>
+        <h3>Skill Development</h3>
+        <p>The EYE-TA evaluates aspects of early child development in five developmental domains:</p>
+        <p><strong>Awareness of Self and Environment</strong> - a child's understanding of the world and his or her ability to make connections with home and community experiences;</p>
+        <p><strong>Social Skills and Approaches to Learning</strong> - a child's attentiveness during classroom activities and his or her ability to interact with peers while respecting classroom rules;</p>
+        <p><strong>Cognitive Skills</strong> - a child's basic mathematics and pre-readng skills and his or her ability to solve problems;</p>
+        <p><strong>Language and Communication</strong> - a child's understanding of spoken language and his or her ability to express thoughts and feelings;</p>
+        <p><strong>Physical Development</strong>
+            <br/><strong>Fine motor</strong> - a child's ability to perform small movements that require hand-eye coordination;
+            <br/><strong>Gross motor</strong> - a child's ability to perform large movements that involve arms, legs, and body.
+        </p>
+    </div>
+</div>
+
+<script>
+var chartGlobal = Chart.defaults.global;
+chartGlobal.animation = false;
+chartGlobal.showTooltips = false;
+</script>
+
+</body>
+</html>
