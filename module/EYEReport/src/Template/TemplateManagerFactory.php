@@ -8,83 +8,92 @@
 
 namespace EYEReport\Template;
 
-use \Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
-class TemplateManagerFactory implements \Zend\ServiceManager\FactoryInterface
+class TemplateManagerFactory implements FactoryInterface
 {
     /**
      * Create the template manager
      *
      * @param ServiceLocatorInterface $serviceLocator
      * @return TemplateManager
+     * @throws \InvalidArgumentException if the config is invalid
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $config = $serviceLocator->get('Config');
-        $defaultTemplateSuffix = '';
-        $templatePath = '';
-        $map = array();
-        if (is_array($config)) {
-            if (isset($config['view_manager'])) {
-                $viewConfig = $config['view_manager'];
-                if (is_array($viewConfig) && isset($viewConfig['default_template_suffix'])) {
-                    $defaultTemplateSuffix = $viewConfig['default_template_suffix'];
-                }
-            }
-            if (isset($config['eye_report'])) {
-                $config = $config['eye_report'];
-                if (is_array($config)) {
-                    if (isset($config['template_path'])) {
-                        $templatePath = $config['template_path'];
-                    }
-                    if (isset($config['default_template_suffix'])) {
-                        $defaultTemplateSuffix = $config['default_template_suffix'];
-                    }
-                    if (isset($config['templates']) && is_array($map)) {
-                        $map = $config['templates'];
-                    }
-                }
-            }
-        }
-        if (!empty($defaultTemplateSuffix)) {
-            $defaultTemplateSuffix = (string)$defaultTemplateSuffix;
-            $defaultTemplateSuffix = '.' . ltrim($defaultTemplateSuffix, '.');
-        }
-        if (!is_string($templatePath)) {
-            throw new \Exception\InvalidArgumentException(sprintf(
-                'Invalid path provided; must be a string, received %s',
-                gettype($templatePath)
-            ));
-        }
-        $templatePath = static::normalizePath($templatePath);
-
         $viewTemplateMapResolver = $serviceLocator->get('ViewTemplateMapResolver');
+
+        $templateBasePath = '';
+        $templateSuffix = '';
+        $map = array();
+
+        if (is_array($config) && isset($config['eye_report'])) {
+            $config = $config['eye_report'];
+            if (is_array($config)) {
+                $templateBasePath = static::normalizeDirPath($config['template_base_path']);
+                if (isset($config['template_suffix'])) {
+                    $templateSuffix = ltrim((string)$config['template_suffix'], '.');
+                    if (!empty($templateSuffix)) {
+                        $templateSuffix = '.' . $templateSuffix;
+                    }
+                }
+                if (isset($config['templates']) && is_array($map)) {
+                    $map = $config['templates'];
+                }
+                if (isset($config['default_template_layout'])) {
+                    $templateLayout = static::normalizeViewPath(
+                        $config['default_template_layout'], $templateBasePath, $templateSuffix
+                    );
+                    $viewTemplateMapResolver->add(TemplateManager::DEFAULT_LAYOUT_KEY, $templateLayout);
+                }
+            }
+        }
+
         foreach ($map as $tk => $tv) {
-            if (empty($tk) || !is_array($tv) || !isset($tv['pages'])) {
+            if (empty($tk) || !is_array($tv)
+                || !isset($tv['pages']) || !is_array($tv['pages']) || empty($tv['pages'])
+            ) {
                 unset($map[$tk]);
                 continue;
             }
             if (!preg_match('[a-zA-Z][a-zA-Z_]*', $tk)) {
-                throw new \Exception\InvalidArgumentException(sprintf(
+                throw new \InvalidArgumentException(sprintf(
                     'Invalid template %s; must be a string containing only letters and underscores, and starting with a letter',
-                    (string)$tk
+                    $tk
+                ));
+            }
+            if (!isset($tv['name']) || !isset($tv['description'])) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Invalid template %s; must have a name and a description', $tk
                 ));
             }
             $pages = array_values($tv['pages']);
             $pageViews = array();
+            $viewBase = TemplateManager::VIEW_KEY_BASE . $tk . '/';
             foreach ($pages as $pageNum => $page) {
-                if (empty($page)) {
-                    throw new \Exception\InvalidArgumentException(sprintf(
-                        'Invalid page in template %s; must not be empty', $tk
-                    ));
-                }
-                $pageView = 'eye_report/template/' . $tk . '/' . ($pageNum + 1);
+                $pageView = $viewBase . 'page' . ($pageNum + 1);
                 $pageViews[] = $pageView;
                 $viewTemplateMapResolver->add($pageView,
-                    $templatePath . rtirm($page, $defaultTemplateSuffix) . $defaultTemplateSuffix
+                    static::normalizeViewPath($page, $templateBasePath, $templateSuffix)
                 );
             }
             $map[$tk]['pages'] = $pageViews;
+            if (isset($tv['layout'])) {
+                $layoutView = $viewBase . 'layout';
+                $viewTemplateMapResolver->add($layoutView,
+                    static::normalizeViewPath($tv['layout'], $templateBasePath, $templateSuffix)
+                );
+                $map[$tk]['layout'] = $layoutView;
+            }
+        }
+        if ($viewTemplateMapResolver->has(TemplateManager::DEFAULT_LAYOUT_KEY)) {
+            foreach ($map as $tk => $tv) {
+                if (!isset($tv['layout'])) {
+                    $map[$tk]['layout'] = TemplateManager::DEFAULT_LAYOUT_KEY;
+                }
+            }
         }
 
         return new TemplateManager($map);
@@ -96,10 +105,35 @@ class TemplateManagerFactory implements \Zend\ServiceManager\FactoryInterface
      * @param  string $path
      * @return string
      */
-    public static function normalizePath($path)
+    private static function normalizePath($path)
     {
+        if (empty($path)) {
+            return '';
+        }
+        $path = (string)$path;
         $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
         $path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
-        return rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $path = rtrim($path, DIRECTORY_SEPARATOR);
+        return empty($path) ? DIRECTORY_SEPARATOR : $path;
+    }
+
+    /**
+     * Normalize a path to a directory
+     *
+     * @param  string $path
+     * @return string
+     */
+    private static function normalizeDirPath($path)
+    {
+        $path = static::normalizePath($path);
+        if (empty($path)) {
+            return '';
+        }
+        return substr($path, -1) == DIRECTORY_SEPARATOR ? $path : $path . DIRECTORY_SEPARATOR;
+    }
+
+    private static function normalizeViewPath($path, $base, $suffix) {
+        $path = ltrim(static::normalizePath($path), DIRECTORY_SEPARATOR);
+        return $base . rtrim($path, $suffix) . $suffix;
     }
 }

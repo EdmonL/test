@@ -1,0 +1,44 @@
+<?php if (empty($model)) {
+    $model = array(
+        'client_name' => 'Demo Client Organization',
+        'report_date' => 'Fall, 2013',
+        'client_logo' => 'Demo Client Logo',
+        'page_num' => '1',
+        'page_total' => '1',
+    );
+} ?>
+<?= $this->doctype(); ?>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <?= $this->headTitle('EYE TA Summary Report')->setSeparator(' - ')->setAutoEscape(false) ?>
+    <?= $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+    <?= $this->headLink(array(
+        'rel' => 'shortcut icon',
+        'type' => 'image/vnd.microsoft.icon',
+        'href' => $this->basePath('img/favicon.ico')
+    ))->appendStylesheet($this->basePath('css/c3.min.css')) ?>
+    <?= $this->headScript()
+        ->appendFile($this->basePath('js/d3.min.js'))
+        ->appendFile($this->basePath('js/c3.min.js'))
+        ->appendFile($this->basePath('js/jquery-2.1.4.min.js'))
+    ?>
+</head>
+<body>
+<div>
+    <div><img src="<?= $this->basePath('img/logo_en.png') ?>"/></div>
+    <div>Early Years Evaluation-Teacher Assessment (EYE-TA)
+        <br>Summary Report for <?= $model['client_name'] ?>
+        <br>Kindergarten, <?= $model['report_date'] ?>
+    </div>
+    <div><?= isset($model['client_logo']) ? $model['client_logo'] : '' ?></div>
+</div>
+<div>
+    <?php echo $this->content; ?>
+</div>
+<div>
+    <span>&copy; KSI Research International (2009) Inc. All rights reserved.</span>
+    <span>Page <?= $model['page_num'] ?> of <?= $model['page_total'] ?></span>
+</div>
+</body>
+</html>

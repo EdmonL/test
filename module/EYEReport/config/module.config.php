@@ -1,14 +1,21 @@
 <?php
 return array(
+    'service_manager' => array(
+        'factories' => array(
+            'EYEReport\TemplateManager' => 'EYEReport\Template\TemplateManagerFactory',
+        ),
+    ),
     'eye_report' => array(
-        'template_path' => __DIR__ . '/view/template',
-        'default_template_suffix' => '.phtml',
+        'template_base_path' => __DIR__ . '/view/template',
+        'template_suffix' => '.phtml',
+        //'default_template_layout' => 'layout', // a path relative to the base path
         'templates' => array(
             'ta_summary' => array(
                 'name' => 'TA Summary Report',
                 'description' => 'An aggregate report at the organizational unit level',
-                'pages' => array(
-                    'page1',
+                'layout' => 'ta_summary/layout', // a path relative to the base path
+                'pages' => array( // path relative to the base path
+                    'ta_summary/page1',
                 ),
             ),
         ),
@@ -24,7 +31,7 @@ return array(
                         'action' => '[a-zA-Z][a-zA-Z_]*',
                         'template' => '[a-zA-Z][a-zA-Z_]*',
                         'language' => '[a-zA-Z]+(_[a-zA-Z]+)?',
-                        'page' => '[0-9]+',
+                        'page' => '[1-9][0-9]*',
                     ),
                     'defaults' => array(
                         '__NAMESPACE__' => 'EYEReport\Controller',
@@ -34,8 +41,8 @@ return array(
         ),
     ),
     'controllers' => array(
-        'invokables' => array(
-            'Application\Controller\Node' => 'Application\Controller\NodeController'
+        'factories' => array(
+            'Application\Controller\Template' => 'Application\Controller\TemplateControllerFactory',
         ),
     ),
 );
