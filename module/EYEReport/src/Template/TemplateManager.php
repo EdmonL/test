@@ -9,6 +9,9 @@
 namespace EYEReport\Template;
 
 
+use Zend\View\Model\ModelInterface;
+use Zend\View\Model\ViewModel;
+
 class TemplateManager
 {
     const VIEW_KEY_BASE = 'eye_report/template/';
@@ -16,7 +19,7 @@ class TemplateManager
 
     protected $config;
 
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
     }
@@ -33,11 +36,11 @@ class TemplateManager
     /**
      * @param string $template
      * @param integer $pageNum starts from 1
-     * @param \Zend\Mvc\Controller\Plugin\Layout|\Zend\View\Model\ModelInterface $layout
      * @param \Zend\View\Model\ViewModel $view
+     * @param \Zend\Mvc\Controller\Plugin\Layout|\Zend\View\Model\ModelInterface $layout
      * @return TemplateManager
      */
-    public function applyTemplateView($template, $pageNum, $view, $layout)
+    public function applyTemplateView($template, $pageNum, ViewModel $view, ModelInterface $layout)
     {
         $tc = $this->config[$template];
         if (!isset($tc)) {

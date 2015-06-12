@@ -1,6 +1,9 @@
 <?php
 namespace EYEReport;
 
+use EYEReport\Controller\TemplateController;
+use Zend\Mvc\Controller\ControllerManager;
+
 class Module
 {
     public function getConfig()
@@ -15,6 +18,18 @@ class Module
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src',
                 ),
+            ),
+        );
+    }
+
+    public function getControllerConfig()
+    {
+        return array(
+            'factories' => array(
+                'EYEReport\Controller\Template' => function (ControllerManager $cm) {
+                    $tm = $cm->getServiceLocator()->get('EYEReport\TemplateManager');
+                    return new TemplateController($tm);
+                },
             ),
         );
     }

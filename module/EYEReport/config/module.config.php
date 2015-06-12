@@ -7,7 +7,7 @@ return array(
     ),
     'eye_report' => array(
         'template_base_path' => __DIR__ . '/view/template',
-        'template_suffix' => '.phtml',
+        'template_suffix' => 'phtml',
         //'default_template_layout' => 'layout', // a path relative to the base path
         'templates' => array(
             'ta_summary' => array(
@@ -40,9 +40,6 @@ return array(
             ),
         ),
     ),
-    'controllers' => array(
-        'factories' => array(
-            'Application\Controller\Template' => 'Application\Controller\TemplateControllerFactory',
-        ),
-    ),
+//    'controllers' => array(
+//    ),
 );

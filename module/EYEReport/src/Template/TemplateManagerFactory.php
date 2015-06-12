@@ -58,7 +58,7 @@ class TemplateManagerFactory implements FactoryInterface
                 unset($map[$tk]);
                 continue;
             }
-            if (!preg_match('[a-zA-Z][a-zA-Z_]*', $tk)) {
+            if (!preg_match('/[a-zA-Z][a-zA-Z_]*/', $tk)) {
                 throw new \InvalidArgumentException(sprintf(
                     'Invalid template %s; must be a string containing only letters and underscores, and starting with a letter',
                     $tk
@@ -100,6 +100,21 @@ class TemplateManagerFactory implements FactoryInterface
     }
 
     /**
+     * Normalize a path to a directory
+     *
+     * @param  string $path
+     * @return string
+     */
+    private static function normalizeDirPath($path)
+    {
+        $path = static::normalizePath($path);
+        if (empty($path)) {
+            return '';
+        }
+        return substr($path, -1) == DIRECTORY_SEPARATOR ? $path : $path . DIRECTORY_SEPARATOR;
+    }
+
+    /**
      * Normalize a path
      *
      * @param  string $path
@@ -115,21 +130,6 @@ class TemplateManagerFactory implements FactoryInterface
         $path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
         $path = rtrim($path, DIRECTORY_SEPARATOR);
         return empty($path) ? DIRECTORY_SEPARATOR : $path;
-    }
-
-    /**
-     * Normalize a path to a directory
-     *
-     * @param  string $path
-     * @return string
-     */
-    private static function normalizeDirPath($path)
-    {
-        $path = static::normalizePath($path);
-        if (empty($path)) {
-            return '';
-        }
-        return substr($path, -1) == DIRECTORY_SEPARATOR ? $path : $path . DIRECTORY_SEPARATOR;
     }
 
     private static function normalizeViewPath($path, $base, $suffix) {

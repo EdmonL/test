@@ -8,6 +8,7 @@
 
 namespace EYEReport\Controller;
 
+use EYEReport\Template\TemplateManager;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -18,7 +19,7 @@ class TemplateController extends AbstractActionController
     /**
      * @param \EYEReport\Template\TemplateManager $tm
      */
-    public function __construct($tm)
+    public function __construct(TemplateManager $tm)
     {
         $this->tm = $tm;
     }
@@ -26,7 +27,7 @@ class TemplateController extends AbstractActionController
     public function previewAction()
     {
         $template = $this->params()->fromRoute('template');
-        $page = $this->params()->fromRoute('page');
+        $page = intval($this->params()->fromRoute('page'));
         $view = new ViewModel();
         $this->tm->applyTemplateView($template, $page, $view, $this->layout());
         return $view;
