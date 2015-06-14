@@ -10,6 +10,7 @@ namespace EYEReport\Template;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
+use Stringy\StaticStringy as S;
 
 class TemplateManagerFactory implements FactoryInterface
 {
@@ -36,7 +37,7 @@ class TemplateManagerFactory implements FactoryInterface
                 if (isset($config['template_suffix'])) {
                     $templateSuffix = ltrim((string)$config['template_suffix'], '.');
                     if (!empty($templateSuffix)) {
-                        $templateSuffix = '.' . $templateSuffix;
+                        $templateSuffix = '.' . strtolower($templateSuffix);
                     }
                 }
                 if (isset($config['templates']) && is_array($map)) {
@@ -132,8 +133,11 @@ class TemplateManagerFactory implements FactoryInterface
         return empty($path) ? DIRECTORY_SEPARATOR : $path;
     }
 
-    private static function normalizeViewPath($path, $base, $suffix) {
+    private static function normalizeViewPath($path, $prefix, $extWithDot) {
         $path = ltrim(static::normalizePath($path), DIRECTORY_SEPARATOR);
-        return $base . rtrim($path, $suffix) . $suffix;
+        if (!S::endsWith($path, $extWithDot, false)) {
+            $path = rtrim($path, '.') . $extWithDot;
+        }
+        return $prefix . $path;
     }
 }

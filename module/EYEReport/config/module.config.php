@@ -6,7 +6,7 @@ return array(
         ),
     ),
     'eye_report' => array(
-        'template_base_path' => __DIR__ . '/view/template',
+        'template_base_path' => __DIR__ . '/../view/template',
         'template_suffix' => 'phtml',
         //'default_template_layout' => 'layout', // a path relative to the base path
         'templates' => array(

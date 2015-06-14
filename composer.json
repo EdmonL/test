@@ -1,6 +1,7 @@
 {
     "require": {
         "php": ">=5.3.3",
-        "zendframework/zendframework": "~2.4"
+        "zendframework/zendframework": "~2.4",
+        "danielstjules/stringy": "~1.9"
     }
 }

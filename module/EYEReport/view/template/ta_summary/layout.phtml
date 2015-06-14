@@ -1,44 +1,132 @@
-<?php if (empty($model)) {
+<?php
+if (empty($model)) {
     $model = array(
         'client_name' => 'Demo Client Organization',
         'report_date' => 'Fall, 2013',
-        'client_logo' => 'Demo Client Logo',
+        'client_logo' => $this->basePath('img/logo_en.png'),
         'page_num' => '1',
         'page_total' => '1',
     );
-} ?>
+}
+$escaper = new \Zend\Escaper\Escaper('utf-8');
+?>
 <?= $this->doctype(); ?>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <?= $this->headTitle('EYE TA Summary Report')->setSeparator(' - ')->setAutoEscape(false) ?>
-    <?= $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
+    <?= $this->headMeta()->prependName('viewport', 'width=device-width, initial-scale=1.0') ?>
     <?= $this->headLink(array(
         'rel' => 'shortcut icon',
         'type' => 'image/vnd.microsoft.icon',
         'href' => $this->basePath('img/favicon.ico')
-    ))->appendStylesheet($this->basePath('css/c3.min.css')) ?>
+    ))->prependStylesheet($this->basePath('css/c3.min.css')) ?>
     <?= $this->headScript()
-        ->appendFile($this->basePath('js/d3.min.js'))
-        ->appendFile($this->basePath('js/c3.min.js'))
-        ->appendFile($this->basePath('js/jquery-2.1.4.min.js'))
+        ->prependFile($this->basePath('js/jquery-2.1.4.min.js'))
+        ->prependFile($this->basePath('js/c3.min.js'))
+        ->prependFile($this->basePath('js/d3.min.js'))
     ?>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: white;
+            font: 11pt calibri, sans-serif;
+            height: 100%;
+            width: 100%;
+            color: black;
+        }
+
+        div, p {
+            margin: 0;
+            padding: 0;
+        }
+
+        img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        h1 {
+            margin: 0;
+            font-weight: bold;
+            font-size: 12pt;
+            color: #5A5A5A;
+        }
+
+        h2 {
+            margin: 0;
+            font-weight: bold;
+            font-size: 12pt;
+            text-decoration: underline;
+        }
+
+        sup {
+            font-weight: bold;
+        }
+
+        #page {
+            min-height: 100%;
+            width: 100%;
+            position: relative;
+            padding-bottom: 5mm; /* for footer */
+        }
+
+        #header, #footer {
+            overflow: hidden;
+            display: table;
+            width: 100%;
+        }
+
+        #header > *, #footer > * {
+            display: table-cell;
+            vertical-align: middle;
+            min-height: 5mm;
+            min-width: 5mm;
+        }
+
+        #footer {
+            position: absolute;
+            bottom: 0;
+            font-size: 9pt;
+            font-weight: bold;
+            height: 5mm;
+        }
+
+        #header_left, #header_right {
+            height: 17mm;
+        }
+
+        #content {
+            width: 100%;
+        }
+    </style>
+    <?= $this->headStyle() ?>
 </head>
 <body>
-<div>
-    <div><img src="<?= $this->basePath('img/logo_en.png') ?>"/></div>
-    <div>Early Years Evaluation-Teacher Assessment (EYE-TA)
-        <br>Summary Report for <?= $model['client_name'] ?>
-        <br>Kindergarten, <?= $model['report_date'] ?>
+<div id="page"><!--
+    --><div id="header"><!--
+        --><div id="header_left"><img src="<?= $this->basePath('img/logo_en.png') ?>" id="eye_logo"/></div><!--
+        --><div id="header_middle"><!--
+            --><h1>Early Years Evaluation - Teacher Assessment (EYE-TA)
+                <br>Summary Report for <?= $escaper->escapeHtml($model['client_name']) ?>
+                <br>Kindergarten, <?= $escaper->escapeHtml($model['report_date']) ?></h1>
+        </div>
+        <div id="header_right" style="text-align: right;">
+            <?php if (isset($model['client_logo'])): ?>
+                <img src="<?= $escaper->escapeHtmlAttr($model['client_logo']) ?>" id="client_logo"/>
+            <?php endif; ?>
+        </div>
     </div>
-    <div><?= isset($model['client_logo']) ? $model['client_logo'] : '' ?></div>
+    <div id="content">
+        <?php echo $this->content; ?>
+    </div>
+    <div id="footer">
+        <div id="footer_left">&copy; KSI Research International (2009) Inc. All rights reserved.</div>
+        <div id="footer_middle"></div>
+        <div id="footer_right">Page <?= $model['page_num'] ?> of <?= $model['page_total'] ?></div>
+    </div>
 </div>
-<div>
-    <?php echo $this->content; ?>
-</div>
-<div>
-    <span>&copy; KSI Research International (2009) Inc. All rights reserved.</span>
-    <span>Page <?= $model['page_num'] ?> of <?= $model['page_total'] ?></span>
-</div>
+<?= $this->inlineScript() ?>
 </body>
 </html>

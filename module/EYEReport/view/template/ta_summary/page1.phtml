@@ -1,4 +1,5 @@
-<?php if (empty($model)) {
+<?php
+if (empty($model)) {
     $model = array(
         'assessment_start_date' => 'Demo Client Organization',
         'assessment_end_date' => 'Fall, 2013',
@@ -11,55 +12,77 @@
         'num_children' => '1',
         'data_num_boys_girls' => '32,64',
     );
-} ?>
-<div>
-    <p>The <em>Early Years Evaluation - Teacher Assessment (<strong>EYE-TA</strong>)</em>
-        provides a systematic framework teachers can use to structure their frequent observations
-        and informal assessments in play-based learning environments<sup>1</sup>. It assesses children's development
-        in five domains, which are consistent with frameworks set out by UNICEF and the US Congress<sup>2</sup>:
-        <em>Awareness of Self and Environment, Social Skills and Approaches to Learning, Cognitive Skills,
-            Language and Communication, and Physical Development</em>.
-        The research has shown that the skills in these domains are related to children's literacy development
-        and their success at school<sup>3,4</sup>.</p>
+}
+$this->headTitle('Page 1');
+$escaper = new \Zend\Escaper\Escaper('utf-8');
+?>
+<?php $this->headStyle()->captureStart() ?>
+#block_intro {
+    background-color: #dde8d0;
+    display: inline-block;
+    height: 100%;
+    width: 30%;
+    line-height: 130%;
+}
 
-    <p>The <em><strong>EYE-TA</strong></em> is a web-based assessment that can be completed by kindergarten
-        or grade 1 teachers as part of their regular classroom practice.</p>
-</div>
+#block_demo_prof {
+    background-color: #ffffcc;
+    display: inline-block;
+    height: 100%;
+    width: 70%;
+}
+<?php $this->headStyle()->captureEnd() ?>
 <div>
-    <div>Demographic Profile</div>
-    <dl>
-        <dt>Assessment Period:</dt>
-        <dd><?= $model['assessment_start_date'] ?> - <?= $model['assessment_end_date'] ?></dd>
-        <dt>Number of participating schools:</dt>
-        <dd><?= $model['num_schools'] ?></dd>
-        <dt>Number of participating teachers:</dt>
-        <dd><?= $model['num_teachers'] ?></dd>
-        <dt>Number of participating classrooms:</dt>
-        <dd><?= $model['num_classrooms'] ?></dd>
-        <dt>Average age on :</dt>
-        <dd><?= $model['avg_age'] ?></dd>
-        <dl>
-            <dt>Boys:</dt>
-            <dd><?= $model['avg_age_boys'] ?></dd>
-            <dt>Girls:</dt>
-            <dd><?= $model['avg_age_girls'] ?></dd>
-        </dl>
-    </dl>
-</div>
-<div>
-    <dl>
-        <dt>Number of children assessed:</dt>
-        <dd><?= $model['num_children'] ?></dd>
-    </dl>
-    <p>Breakdown of boys and girls:</p>
+    <div id="block_intro">
+        <p>The <em>Early Years Evaluation - Teacher Assessment (<strong>EYE-TA</strong>)</em>
+            provides a systematic framework teachers can use to structure their frequent observations
+            and informal assessments in play-based learning environments<sup>1</sup>. It assesses children's development
+            in five domains, which are consistent with frameworks set out by UNICEF and the US Congress<sup>2</sup>:
+            <em>Awareness of Self and Environment, Social Skills and Approaches to Learning, Cognitive Skills,
+                Language and Communication, and Physical Development</em>.
+            The research has shown that the skills in these domains are related to children's literacy development
+            and their success at school<sup>3,4</sup>.</p>
 
-    <div id="numOfBoysAndGirls"></div>
-</div>
-<div>
-    <p>Boys - Age on </p>
-    <canvas id="agesOfBoys"></canvas>
-    <p>Girls - Age on </p>
-    <canvas id="agesOfGirls"></canvas>
+        <p>The <em><strong>EYE-TA</strong></em> is a web-based assessment that can be completed by kindergarten
+            or grade 1 teachers as part of their regular classroom practice.</p>
+    </div><div id="block_demo_prof">
+        <p><h2>Demographic Profile</h2></p>
+        <div>
+            <dl>
+                <dt>Assessment Period:</dt>
+                <dd><?= $model['assessment_start_date'] ?> - <?= $model['assessment_end_date'] ?></dd>
+                <dt>Number of participating schools:</dt>
+                <dd><?= $model['num_schools'] ?></dd>
+                <dt>Number of participating teachers:</dt>
+                <dd><?= $model['num_teachers'] ?></dd>
+                <dt>Number of participating classrooms:</dt>
+                <dd><?= $model['num_classrooms'] ?></dd>
+                <dt>Average age on :</dt>
+                <dd><?= $model['avg_age'] ?></dd>
+                <dl>
+                    <dt>Boys:</dt>
+                    <dd><?= $model['avg_age_boys'] ?></dd>
+                    <dt>Girls:</dt>
+                    <dd><?= $model['avg_age_girls'] ?></dd>
+                </dl>
+            </dl>
+        </div>
+        <div id="">
+            <dl>
+                <dt>Number of children assessed:</dt>
+                <dd><?= $model['num_children'] ?></dd>
+            </dl>
+            <p>Breakdown of boys and girls:</p>
+
+            <div id="numOfBoysAndGirls"></div>
+        </div>
+        <div>
+            <p>Boys - Age on </p>
+            <canvas id="agesOfBoys"></canvas>
+            <p>Girls - Age on </p>
+            <canvas id="agesOfGirls"></canvas>
+        </div>
+    </div>
 </div>
 <div>
     <div>
@@ -91,6 +114,9 @@
     $(document).ready(function () {
         c3.generate({
             bindto: '#numOfBoysAndGirls',
+            interaction: {enabled: false},
+            transition: {duration: null},
+            legend: {show: false},
             data: {
                 columns: [
                     ['data', <?= $model['data_num_boys_girls'] ?>]
@@ -104,6 +130,9 @@
                 x: {
                     type: 'category',
                     categories: ['Boys', 'Girls']
+                },
+                y: {
+                    tick: {outer: false}
                 }
             }
         });
